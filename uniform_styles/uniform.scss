@@ -1,0 +1,78 @@
+$color-primary: #4E77E4;
+$color-secondary: #FBCB0A;
+$color-accent: #FF5C8D;
+$color-muted: #8892B0;
+$color-background: #F9FAFB;
+$color-surface: #FFFFFF;
+$color-danger: #EF4444;
+$color-success: #10B981;
+$color-neutral: #F1F5F9;
+$color-dark: #1E293B;
+
+@mixin gradient-background($deg: 135deg) {
+  background: linear-gradient($deg, $color-primary 50%, $color-success 100%);
+}
+
+@mixin centerDiv($dir) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: $dir;
+}
+
+@mixin container($width, $height) {
+  width: $width;
+  height: $height;
+  color: $color-dark;
+  background-color: $color-background;
+  @include centerDiv(column);
+}
+
+@mixin Button($width: 100%, $height: auto, $color: $color-primary) {
+  color: $color;
+  width: $width;
+  height: $height;
+  padding: .5rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border: 2px solid $color;
+  background-color: transparent;
+  border-radius: 5px;
+
+  span {
+    position: relative;
+    z-index: 2;
+  }
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: -25%;
+    left: -25%;
+    width: 150%;
+    height: 150%;
+    background-color: $color;
+    z-index: 0;
+    transition: all 0.2s ease-in-out;
+    pointer-events: none;
+    transform: translate(100%, 100%);
+    border-radius: 50px 0 0 0;
+  }
+
+
+  &:hover {
+    color: $color-background;
+
+    &::before {
+      transform: translateX(0);
+      transform: translateY(0);
+    }
+
+
+  }
+}

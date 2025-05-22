@@ -1,0 +1,92 @@
+@import '../../../../uniform_styles/uniform';
+
+.container {
+  @include container(100%, 100vh);
+  position: relative;
+
+  .bgSquare {
+    position: absolute;
+    width: 30%;
+    height: 40%;
+    background-color: $color-primary;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    opacity: 0.7;
+    background: linear-gradient(350deg, $color-primary 50%, $color-success 100%);
+    clip-path: polygon(0 0, 100% 0%, 100% 75%, 0% 100%);
+
+
+    &:nth-child(2) {
+      top: calc(100% - 40%);
+      left: calc(100% - 30%);
+      background: linear-gradient(20deg);
+      width: 30%;
+      height: 40%;
+      clip-path: polygon(25% 0, 100% 0%, 99% 100%, 0% 100%);
+
+    }
+  }
+
+  .form {
+    @include container(60%, auto);
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 10px;
+    flex-direction: row;
+    overflow: hidden;
+    position: relative;
+    z-index: 4;
+
+    .title {
+      font-size: 2rem;
+      font-weight: 600;
+      color: $color-primary;
+    }
+
+    .titleDesc {
+      font-size: 1rem;
+      font-weight: 400;
+      color: $color-muted;
+      margin-bottom: 2rem;
+      font-style: italic;
+    }
+
+    .formSegment {
+      @include container(100%, 100%);
+      padding: 2rem 0;
+      padding-bottom: 2.5rem;
+
+      .formGroup {
+        .submitButton {
+          margin-top: 3rem;
+          @include Button()
+        }
+      }
+    }
+
+    .coloredSegment {
+      @include container(80%, 100%);
+      @include gradient-background;
+
+      .box {
+        @include container(70%, 100%);
+        background-color: transparent;
+
+        h1 {
+          font-size: 2rem;
+          font-weight: 600;
+          color: $color-background;
+          font-style: italic;
+          margin-bottom: 1rem;
+        }
+
+        p {
+          font-size: 1rem;
+          font-weight: 400;
+          color: $color-background;
+          font-style: italic;
+        }
+      }
+    }
+  }
+}

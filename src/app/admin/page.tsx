@@ -1,22 +1,19 @@
 "use client"
 
-import { useUser } from "@/hooks/useUser";
-import { createClient } from "@/lib/supabase/client";
-
-
-const supabase = createClient();
+import CompanyTableComponent from "@/features/admin/table";
+import { useCompanies } from "@/hooks/useCompanies";
 
 export default function AdminPage() {
+  const { data, isLoading, error } = useCompanies();
 
-  supabase.auth.signOut();
-
-  // const user = useUser();
-  // console.log("User:", user);
+  if (error) {
+    return <div>Error loading companies: {error.message}</div>;
+  }
 
   return (
-    <div>
-      <h1>Admin Page</h1>
-      <p>This is the admin page.</p>
-    </div>
+    <CompanyTableComponent
+      data={data || []}
+      isLoading={isLoading}
+    ></CompanyTableComponent>
   );
 }

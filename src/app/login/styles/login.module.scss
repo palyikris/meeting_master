@@ -29,7 +29,7 @@
   }
 
   .form {
-    @include container(85%, auto);
+    @include container(65%, auto);
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     border-radius: 10px;
     flex-direction: row;
@@ -89,4 +89,14 @@
       }
     }
   }
+}
+
+@media screen and (max-width: 1400px) {
+  .container {
+    .form {
+      @include container(85%, auto);
+      flex-direction: row;
+    }
+  }
+
 }

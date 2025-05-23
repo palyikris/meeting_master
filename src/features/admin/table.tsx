@@ -22,14 +22,7 @@ import {
 //Icons Imports
 import { AccountCircle, Send } from "@mui/icons-material";
 
-
-
-
-const CompanyTable = (props: {
-  data: Company[];
-  isLoading: boolean;
-}) => {
-
+const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
   const { data, isLoading } = props;
 
   const columns = useMemo<MRT_ColumnDef<Company>[]>(
@@ -40,26 +33,30 @@ const CompanyTable = (props: {
         columns: [
           {
             accessorKey: "name",
-            id: "name", //id is still required when using accessorFn instead of accessorKey
+            id: "name",
             header: "Name",
             size: 200,
+            enableEditing: true
           },
           {
             accessorKey: "is_active",
             header: "Active",
             size: 100,
+            enableEditing: true,
+            editVariant: "select",
+            editSelectOptions: [
+              { value: true, label: "Active" },
+              { value: false, label: "Inactive" }
+            ],
             Cell: ({ renderedCellValue }) => (
               <Box
                 component="span"
-                sx={(theme) => ({
+                sx={() => ({
                   backgroundColor:
-                    renderedCellValue === "true"
-                      ? theme.palette.success.dark
-                      : theme.palette.error.dark,
+                    renderedCellValue === "true" ? "#10B981" : "#EF4444",
                   borderRadius: "0.25rem",
                   color: "#fff",
-                  maxWidth: "9ch",
-                  p: "0.25rem"
+                  p: ".5rem 5rem"
                 })}
               >
                 {renderedCellValue === "true" ? "Active" : "Inactive"}
@@ -70,6 +67,7 @@ const CompanyTable = (props: {
             accessorKey: "created_at",
             header: "Created At",
             size: 150,
+            enableEditing: false,
             Cell: ({ renderedCellValue }) => {
               const date = new Date(renderedCellValue as string);
               return (
@@ -80,10 +78,10 @@ const CompanyTable = (props: {
                     borderRadius: "0.25rem",
                     color: "#fff",
                     maxWidth: "9ch",
-                    p: "0.25rem"
+                    p: ".5rem 5rem"
                   })}
                 >
-                  {date.toLocaleDateString("en-US", {
+                  {date.toLocaleDateString("hu-HU", {
                     year: "numeric",
                     month: "2-digit",
                     day: "2-digit"
@@ -103,11 +101,10 @@ const CompanyTable = (props: {
     data,
     enableColumnFilterModes: true,
     enableColumnOrdering: true,
-    enableGrouping: true,
-    enableColumnPinning: true,
-    enableFacetedValues: true,
     enableRowActions: true,
     enableRowSelection: true,
+    enableEditing: true,
+    editDisplayMode: "row",
     initialState: {
       showColumnFilters: true,
       showGlobalFilter: true,
@@ -118,7 +115,7 @@ const CompanyTable = (props: {
     },
     state: {
       showProgressBars: isLoading,
-      showSkeletons: isLoading,
+      showSkeletons: isLoading
     },
     paginationDisplayMode: "pages",
     positionToolbarAlertBanner: "bottom",
@@ -132,7 +129,7 @@ const CompanyTable = (props: {
       shape: "rounded",
       variant: "outlined"
     },
-    
+
     renderRowActionMenuItems: ({ closeMenu }) => [
       <MenuItem
         key={0}
@@ -162,21 +159,9 @@ const CompanyTable = (props: {
       </MenuItem>
     ],
     renderTopToolbar: ({ table }) => {
-      const handleDeactivate = () => {
-        table.getSelectedRowModel().flatRows.map((row) => {
-          alert("deactivating " + row.getValue("name"));
-        });
-      };
-
       const handleActivate = () => {
         table.getSelectedRowModel().flatRows.map((row) => {
           alert("activating " + row.getValue("name"));
-        });
-      };
-
-      const handleContact = () => {
-        table.getSelectedRowModel().flatRows.map((row) => {
-          alert("contact " + row.getValue("name"));
         });
       };
 
@@ -198,28 +183,14 @@ const CompanyTable = (props: {
           <Box>
             <Box sx={{ display: "flex", gap: "0.5rem" }}>
               <Button
-                color="error"
-                disabled={!table.getIsSomeRowsSelected()}
-                onClick={handleDeactivate}
-                variant="contained"
-              >
-                Deactivate
-              </Button>
-              <Button
                 color="success"
-                disabled={!table.getIsSomeRowsSelected()}
                 onClick={handleActivate}
                 variant="contained"
+                sx={{
+                  color: "white"
+                }}
               >
-                Activate
-              </Button>
-              <Button
-                color="info"
-                disabled={!table.getIsSomeRowsSelected()}
-                onClick={handleContact}
-                variant="contained"
-              >
-                Contact
+                Add new
               </Button>
             </Box>
           </Box>
@@ -236,10 +207,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Company } from "@/types";
 
 const CompanyTableComponent = (props: {
-  data: Company[],
+  data: Company[];
   isLoading: boolean;
 }) => (
-  //App.tsx or AppProviders file
   <LocalizationProvider dateAdapter={AdapterDayjs}>
     <Container maxWidth="xl">
       <CompanyTable data={props.data} isLoading={props.isLoading} />

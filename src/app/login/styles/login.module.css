@@ -32,7 +32,7 @@
           clip-path: polygon(25% 0, 100% 0%, 99% 100%, 0% 100%);
 }
 .container .form {
-  width: 85%;
+  width: 65%;
   height: auto;
   color: #1E293B;
   background-color: #F9FAFB;
@@ -147,4 +147,18 @@
   font-weight: 400;
   color: #F9FAFB;
   font-style: italic;
+}
+
+@media screen and (max-width: 1400px) {
+  .container .form {
+    width: 85%;
+    height: auto;
+    color: #1E293B;
+    background-color: #F9FAFB;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    flex-direction: row;
+  }
 }/*# sourceMappingURL=login.module.css.map */

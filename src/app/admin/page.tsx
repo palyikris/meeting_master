@@ -2,6 +2,7 @@
 
 import CompanyTableComponent from "@/features/admin/table";
 import { useCompanies } from "@/hooks/useCompanies";
+import { Box } from "@mui/material";
 
 export default function AdminPage() {
   const { data, isLoading, error } = useCompanies();
@@ -11,9 +12,22 @@ export default function AdminPage() {
   }
 
   return (
-    <CompanyTableComponent
-      data={data || []}
-      isLoading={isLoading}
-    ></CompanyTableComponent>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "1rem",
+        padding: "1rem",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
+        height: "100vh"
+      }}
+    >
+      <CompanyTableComponent
+        data={data || []}
+        isLoading={isLoading}
+      ></CompanyTableComponent>
+    </Box>
   );
 }

@@ -23,8 +23,12 @@ export async function getCompanyById(id: string): Promise<Company | null> {
   return data;
 }
 
-export async function createCompany(company: Company): Promise<Company | null> {
-  const { data } = await axios.post("/api/companies", company);
+export async function createCompany(
+  companyName: string
+): Promise<Company | null> {
+  const { data } = await axios.post("/api/companies", {
+    name: companyName
+  });
 
   if (!data || data.error) {
     console.error("Error creating company:", data.error);
@@ -34,11 +38,16 @@ export async function createCompany(company: Company): Promise<Company | null> {
   return data;
 }
 
+type CompanyUpdate = Omit<Company, "created_at">;
+
 export async function updateCompany(
-  id: string,
-  company: Company
+  company: CompanyUpdate
 ): Promise<Company | null> {
-  const { data } = await axios.put(`/api/companies/${id}`, company);
+  if (!company.id) {
+    console.error("Company ID is required for update.");
+    return null;
+  }
+  const { data } = await axios.put(`/api/companies/${company.id}`, company);
 
   if (!data || data.error) {
     console.error("Error updating company:", data.error);

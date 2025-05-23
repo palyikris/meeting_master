@@ -10,20 +10,20 @@ import {
 } from "material-react-table";
 
 //Material UI Imports
-import {
-  Box,
-  Button,
-  Container,
-  ListItemIcon,
-  MenuItem,
-  lighten
-} from "@mui/material";
-
-//Icons Imports
-import { AccountCircle, Send } from "@mui/icons-material";
+import { Box, Button, Container, lighten } from "@mui/material";
+import { useCreateCompany } from "@/hooks/company/useCreateCompany";
 
 const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
   const { data, isLoading } = props;
+
+  const { mutate: createCompany, isPending: isCreateCompanyPending } =
+    useCreateCompany();
+
+  const { mutate: updateCompany, isPending: isUpdateCompanyPending } =
+    useUpdateCompany();
+
+  const { mutate: deleteCompany, isPending: isDeleteCompanyPending } =
+    useDeleteCompany();
 
   const columns = useMemo<MRT_ColumnDef<Company>[]>(
     () => [
@@ -32,11 +32,41 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
         header: "Companies",
         columns: [
           {
+            accessorKey: "id",
+            id: "id",
+            header: "ID",
+            size: 150,
+            enableEditing: false,
+            Cell: ({ renderedCellValue }) => (
+              <Box
+                component="span"
+                sx={() => ({
+                  borderRadius: "0.25rem",
+                  color: "#1E293B"
+                })}
+              >
+                {renderedCellValue}
+              </Box>
+            )
+          },
+          {
             accessorKey: "name",
             id: "name",
             header: "Name",
             size: 200,
-            enableEditing: true
+            enableEditing: true,
+            Cell: ({ renderedCellValue }) => (
+              <Box
+                component="span"
+                sx={() => ({
+                  borderRadius: "0.25rem",
+                  fontWeight: "bold",
+                  color: "#FF5C8D"
+                })}
+              >
+                {renderedCellValue}
+              </Box>
+            )
           },
           {
             accessorKey: "is_active",
@@ -52,14 +82,11 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
               <Box
                 component="span"
                 sx={() => ({
-                  backgroundColor:
-                    renderedCellValue === "true" ? "#10B981" : "#EF4444",
-                  borderRadius: "0.25rem",
-                  color: "#fff",
-                  p: ".5rem 5rem"
+                  color: renderedCellValue ? "#10B981" : "#EF4444",
+                  borderRadius: "0.25rem"
                 })}
               >
-                {renderedCellValue === "true" ? "Active" : "Inactive"}
+                {renderedCellValue ? "Active" : "Inactive"}
               </Box>
             )
           },
@@ -73,12 +100,9 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
               return (
                 <Box
                   component="span"
-                  sx={(theme) => ({
-                    backgroundColor: theme.palette.info.dark,
+                  sx={() => ({
                     borderRadius: "0.25rem",
-                    color: "#fff",
-                    maxWidth: "9ch",
-                    p: ".5rem 5rem"
+                    color: "#1E293B"
                   })}
                 >
                   {date.toLocaleDateString("hu-HU", {
@@ -102,11 +126,11 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
     enableColumnFilterModes: true,
     enableColumnOrdering: true,
     enableRowActions: true,
-    enableRowSelection: true,
     enableEditing: true,
+    createDisplayMode: "row",
     editDisplayMode: "row",
     initialState: {
-      showColumnFilters: true,
+      showColumnFilters: false,
       showGlobalFilter: true,
       columnPinning: {
         left: ["mrt-row-expand", "mrt-row-select"],
@@ -114,9 +138,42 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
       }
     },
     state: {
-      showProgressBars: isLoading,
-      showSkeletons: isLoading
+      showProgressBars:
+        isLoading ||
+        isCreateCompanyPending ||
+        isUpdateCompanyPending ||
+        isDeleteCompanyPending,
+      showSkeletons:
+        isLoading ||
+        isCreateCompanyPending ||
+        isUpdateCompanyPending ||
+        isDeleteCompanyPending
     },
+    renderRowActions: ({ row, table }) => (
+      <Box sx={{ display: "flex", gap: "0.5rem" }}>
+        <Button
+          color="error"
+          onClick={() => {
+            deleteCompany({
+              id: row.original.id
+            });
+            table.setEditingRow(null);
+          }}
+          variant="contained"
+        >
+          Delete
+        </Button>
+        <Button
+          color="primary"
+          onClick={() => {
+            table.setEditingRow(row);
+          }}
+          variant="contained"
+        >
+          Edit
+        </Button>
+      </Box>
+    ),
     paginationDisplayMode: "pages",
     positionToolbarAlertBanner: "bottom",
     muiSearchTextFieldProps: {
@@ -125,58 +182,62 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
     },
     muiPaginationProps: {
       color: "secondary",
-      rowsPerPageOptions: [10, 20, 30],
+      rowsPerPageOptions: [4],
       shape: "rounded",
       variant: "outlined"
     },
+    onCreatingRowSave: async ({ values }) => {
+      const newCompany = {
+        name: values.name
+      };
 
-    renderRowActionMenuItems: ({ closeMenu }) => [
-      <MenuItem
-        key={0}
-        onClick={() => {
-          // View profile logic...
-          closeMenu();
-        }}
-        sx={{ m: 0 }}
-      >
-        <ListItemIcon>
-          <AccountCircle />
-        </ListItemIcon>
-        View Profile
-      </MenuItem>,
-      <MenuItem
-        key={1}
-        onClick={() => {
-          // Send email logic...
-          closeMenu();
-        }}
-        sx={{ m: 0 }}
-      >
-        <ListItemIcon>
-          <Send />
-        </ListItemIcon>
-        Send Email
-      </MenuItem>
-    ],
+      try {
+        createCompany(newCompany);
+        table.setCreatingRow(null);
+      } catch (error) {
+        console.error("Error creating company:", error);
+      }
+    },
+    onEditingRowSave: async ({ values }) => {
+      const updatedCompany = {
+        id: values.id,
+        name: values.name,
+        is_active: values.is_active
+      };
+
+      console.log("Updated company:", updatedCompany);
+
+      try {
+        updateCompany(updatedCompany);
+        table.setEditingRow(null);
+      } catch (error) {
+        console.error("Error updating company:", error);
+      }
+    },
     renderTopToolbar: ({ table }) => {
-      const handleActivate = () => {
-        table.getSelectedRowModel().flatRows.map((row) => {
-          alert("activating " + row.getValue("name"));
-        });
+      const handleAddingNewCompany = () => {
+        table.setCreatingRow(true);
       };
 
       return (
         <Box
-          sx={(theme) => ({
-            backgroundColor: lighten(theme.palette.background.default, 0.05),
+          sx={() => ({
+            
             display: "flex",
             gap: "0.5rem",
             p: "8px",
             justifyContent: "space-between"
           })}
         >
-          <Box sx={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-            {/* import MRT sub-components */}
+          <Box
+            sx={{
+              display: "flex",
+              gap: "0.5rem",
+              alignItems: "center"
+              // background:
+              //   "background: linear-gradient($deg, $color-primary 50%, $color-success 100%)"
+            }}
+          >
             <MRT_GlobalFilterTextField table={table} />
             <MRT_ToggleFiltersButton table={table} />
           </Box>
@@ -184,7 +245,7 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
             <Box sx={{ display: "flex", gap: "0.5rem" }}>
               <Button
                 color="success"
-                onClick={handleActivate}
+                onClick={handleAddingNewCompany}
                 variant="contained"
                 sx={{
                   color: "white"
@@ -205,6 +266,8 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Company } from "@/types";
+import { useUpdateCompany } from "@/hooks/company/useUpdateCompany";
+import { useDeleteCompany } from "@/hooks/company/useDeleteCompany";
 
 const CompanyTableComponent = (props: {
   data: Company[];

@@ -1,7 +1,7 @@
 "use client"
 
 import CompanyTableComponent from "@/features/admin/table";
-import { useCompanies } from "@/hooks/useCompanies";
+import { useCompanies } from "@/hooks/company/useCompanies";
 import { Box } from "@mui/material";
 
 export default function AdminPage() {

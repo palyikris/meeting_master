@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 //MRT Imports
 import {
@@ -6,24 +6,30 @@ import {
   useMaterialReactTable,
   type MRT_ColumnDef,
   MRT_GlobalFilterTextField,
-  MRT_ToggleFiltersButton
+  MRT_ToggleFiltersButton,
+  MRT_TablePagination
 } from "material-react-table";
 
 //Material UI Imports
-import { Box, Button, Container, lighten } from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 import { useCreateCompany } from "@/hooks/company/useCreateCompany";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import AddBoxRoundedIcon from "@mui/icons-material/AddBoxRounded";
+import CloudOffRoundedIcon from "@mui/icons-material/CloudOffRounded";
+import CloudSyncRoundedIcon from "@mui/icons-material/CloudSyncRounded";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 
 const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
   const { data, isLoading } = props;
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const { mutate: createCompany, isPending: isCreateCompanyPending } =
-    useCreateCompany();
+  const { mutate: createCompany } = useCreateCompany();
 
-  const { mutate: updateCompany, isPending: isUpdateCompanyPending } =
-    useUpdateCompany();
+  const { mutate: updateCompany } = useUpdateCompany();
 
-  const { mutate: deleteCompany, isPending: isDeleteCompanyPending } =
-    useDeleteCompany();
+  const { mutate: deleteCompany } = useDeleteCompany();
 
   const columns = useMemo<MRT_ColumnDef<Company>[]>(
     () => [
@@ -35,7 +41,7 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
             accessorKey: "id",
             id: "id",
             header: "ID",
-            size: 150,
+            size: 200,
             enableEditing: false,
             Cell: ({ renderedCellValue }) => (
               <Box
@@ -69,15 +75,61 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
             )
           },
           {
+            accessorKey: "email",
+            header: "Email",
+            size: 250,
+            enableEditing: true,
+            Cell: ({ renderedCellValue }) => (
+              <Box
+                component="span"
+                sx={() => ({
+                  borderRadius: "0.25rem",
+                  color: "#1E293B"
+                })}
+              >
+                {renderedCellValue}
+              </Box>
+            )
+          },
+          {
+            accessorKey: "address",
+            header: "Address",
+            size: 300,
+            enableEditing: true,
+            Cell: ({ renderedCellValue }) => (
+              <Box
+                component="span"
+                sx={() => ({
+                  borderRadius: "0.25rem",
+                  color: "#1E293B"
+                })}
+              >
+                {renderedCellValue}
+              </Box>
+            )
+          },
+          {
+            accessorKey: "phone",
+            header: "Phone",
+            size: 180,
+            enableEditing: true,
+            Cell: ({ renderedCellValue }) => (
+              <Box
+                component="span"
+                sx={() => ({
+                  borderRadius: "0.25rem",
+                  color: "#1E293B"
+                })}
+              >
+                {renderedCellValue}
+              </Box>
+            )
+          },
+          {
             accessorKey: "is_active",
             header: "Active",
             size: 100,
-            enableEditing: true,
-            editVariant: "select",
-            editSelectOptions: [
-              { value: true, label: "Active" },
-              { value: false, label: "Inactive" }
-            ],
+            enableEditing: false,
             Cell: ({ renderedCellValue }) => (
               <Box
                 component="span"
@@ -135,19 +187,16 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
       columnPinning: {
         left: ["mrt-row-expand", "mrt-row-select"],
         right: ["mrt-row-actions"]
+      },
+      pagination: {
+        pageIndex: 0,
+        pageSize: 4
       }
     },
     state: {
-      showProgressBars:
-        isLoading ||
-        isCreateCompanyPending ||
-        isUpdateCompanyPending ||
-        isDeleteCompanyPending,
-      showSkeletons:
-        isLoading ||
-        isCreateCompanyPending ||
-        isUpdateCompanyPending ||
-        isDeleteCompanyPending
+      showProgressBars: isLoading || loading,
+      showSkeletons: isLoading || loading,
+      showLoadingOverlay: loading
     },
     renderRowActions: ({ row, table }) => (
       <Box sx={{ display: "flex", gap: "0.5rem" }}>
@@ -161,7 +210,7 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
           }}
           variant="contained"
         >
-          Delete
+          <DeleteRoundedIcon></DeleteRoundedIcon>
         </Button>
         <Button
           color="primary"
@@ -170,8 +219,52 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
           }}
           variant="contained"
         >
-          Edit
+          <EditRoundedIcon></EditRoundedIcon>
         </Button>
+        {row.original.is_active ? (
+          <Button
+            color="warning"
+            variant="contained"
+            onClick={() => {
+              setLoading(true);
+
+              updateCompany({
+                is_active: false,
+                id: row.original.id,
+                name: row.original.name,
+                email: row.original.email,
+                address: row.original.address,
+                phone: row.original.phone
+              });
+              table.setEditingRow(null);
+
+              setLoading(false);
+            }}
+          >
+            <CloudOffRoundedIcon></CloudOffRoundedIcon>
+          </Button>
+        ) : (
+          <Button
+            color="success"
+            variant="contained"
+            onClick={() => {
+              setLoading(true);
+
+              updateCompany({
+                is_active: true,
+                id: row.original.id,
+                name: row.original.name,
+                email: row.original.email,
+                address: row.original.address,
+                phone: row.original.phone
+              });
+
+              setLoading(false);
+            }}
+          >
+            <CloudSyncRoundedIcon></CloudSyncRoundedIcon>
+          </Button>
+        )}
       </Box>
     ),
     paginationDisplayMode: "pages",
@@ -187,8 +280,12 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
       variant: "outlined"
     },
     onCreatingRowSave: async ({ values }) => {
+      setLoading(true);
       const newCompany = {
-        name: values.name
+        name: values.name,
+        phone: values.phone,
+        email: values.email,
+        address: values.address
       };
 
       try {
@@ -197,15 +294,19 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
       } catch (error) {
         console.error("Error creating company:", error);
       }
+
+      setLoading(false);
     },
     onEditingRowSave: async ({ values }) => {
+      setLoading(true);
       const updatedCompany = {
         id: values.id,
         name: values.name,
-        is_active: values.is_active
+        is_active: values.is_active,
+        email: values.email,
+        address: values.address,
+        phone: values.phone
       };
-
-      console.log("Updated company:", updatedCompany);
 
       try {
         updateCompany(updatedCompany);
@@ -213,6 +314,8 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
       } catch (error) {
         console.error("Error updating company:", error);
       }
+
+      setLoading(false);
     },
     renderTopToolbar: ({ table }) => {
       const handleAddingNewCompany = () => {
@@ -222,7 +325,6 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
       return (
         <Box
           sx={() => ({
-            
             display: "flex",
             gap: "0.5rem",
             p: "8px",
@@ -234,8 +336,6 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
               display: "flex",
               gap: "0.5rem",
               alignItems: "center"
-              // background:
-              //   "background: linear-gradient($deg, $color-primary 50%, $color-success 100%)"
             }}
           >
             <MRT_GlobalFilterTextField table={table} />
@@ -244,6 +344,17 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
           <Box>
             <Box sx={{ display: "flex", gap: "0.5rem" }}>
               <Button
+                color="primary"
+                variant="contained"
+                onClick={() => {
+                  const supabase = createClient();
+                  supabase.auth.signOut();
+                  router.push("/login");
+                }}
+              >
+                <LogoutRoundedIcon></LogoutRoundedIcon>
+              </Button>
+              <Button
                 color="success"
                 onClick={handleAddingNewCompany}
                 variant="contained"
@@ -251,13 +362,46 @@ const CompanyTable = (props: { data: Company[]; isLoading: boolean }) => {
                   color: "white"
                 }}
               >
-                Add new
+                <AddBoxRoundedIcon
+                  sx={{
+                    marginRight: ".5rem"
+                  }}
+                ></AddBoxRoundedIcon>
+                <span>Add new company</span>
               </Button>
             </Box>
           </Box>
         </Box>
       );
-    }
+    },
+    renderBottomToolbar: ({ table }) => (
+      <Box
+        sx={() => ({
+          display: "flex",
+          gap: "0.5rem",
+          p: "8px",
+          justifyContent: "space-between"
+        })}
+      >
+        <MRT_TablePagination table={table} />
+        <Box
+          sx={{
+            display: "flex",
+            gap: "0.5rem",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingRight: "1rem"
+          }}
+        >
+          <Image
+            src={"/logo.png"}
+            alt="Meeting master logo"
+            width={120}
+            height={100}
+          ></Image>
+        </Box>
+      </Box>
+    )
   });
 
   return <MaterialReactTable table={table} />;
@@ -268,6 +412,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Company } from "@/types";
 import { useUpdateCompany } from "@/hooks/company/useUpdateCompany";
 import { useDeleteCompany } from "@/hooks/company/useDeleteCompany";
+import Image from "next/image";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 const CompanyTableComponent = (props: {
   data: Company[];

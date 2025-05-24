@@ -3,6 +3,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface CreateCompanyPayload {
   name: string;
+  email: string;
+  address: string;
+  phone: string;
 }
 
 export const useCreateCompany = () => {
@@ -10,10 +13,15 @@ export const useCreateCompany = () => {
 
   return useMutation({
     mutationFn: async (payload: CreateCompanyPayload) => {
-      createCompany(payload.name);
+      createCompany({
+        name: payload.name,
+        email: payload.email,
+        address: payload.address,
+        phone: payload.phone
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['companies'] });
+      queryClient.invalidateQueries({ queryKey: ["companies"] });
     }
   });
 };

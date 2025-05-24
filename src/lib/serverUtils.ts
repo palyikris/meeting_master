@@ -1,24 +1,30 @@
-import { cookies } from "next/headers";
 import { createClient } from "./supabase/server";
 import { Company } from "@/types";
 
-
 export async function getCompanies(): Promise<Company[] | null> {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = await createClient();
 
   const { data, error } = await supabase.from("companies").select("*");
 
   return error ? null : data;
 }
 
-export async function createCompany(name: string): Promise<Company | null> {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+export async function createCompany({
+  name,
+  email,
+  address,
+  phone
+}: {
+  name: string;
+  email: string;
+  address: string;
+  phone: string;
+}): Promise<Company | null> {
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("companies")
-    .insert([{ name }])
+    .insert([{ name, email, address, phone }])
     .select("*");
 
   if (error) {

@@ -49,7 +49,7 @@ export default function LoginPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { email, password } = values;
 
-    const {data, error} = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
@@ -63,14 +63,16 @@ export default function LoginPage() {
         .select("*")
         .eq("user_id", data.session.user.id)
         .single();
-      
-      dispatch(setUser({
-        id: data.session.user.id,
-        email: data.session.user.email,
-        role: profile?.role,
-        company_id: profile?.company_id
-      }))
-      
+
+      dispatch(
+        setUser({
+          id: data.session.user.id,
+          email: data.session.user.email || "",
+          role: profile?.role,
+          company_id: profile?.company_id
+        })
+      );
+
       if (profile?.role === "admin") {
         router.push("/admin");
       } else if (profile?.role === "company_admin") {
@@ -81,7 +83,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     checkSession(supabase, router);
-  }, []);
+  }, [router]);
   
 
   return (

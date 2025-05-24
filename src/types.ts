@@ -5,6 +5,9 @@ export interface Company {
   name: string;
   is_active: boolean;
   created_at: string;
+  email: string;
+  phone: string;
+  address: string;
 }
 
 export interface Room {

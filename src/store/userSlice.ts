@@ -1,21 +1,23 @@
+import { UserProfile } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export interface UserState {
-  id: string;
-  email: string;
-  role: "admin" | "company_admin";
-  company_id?: string;
-}
+const initialState: UserProfile = {
+  id: "",
+  email: "",
+  role: "user",
+  company_id: undefined
+};
 
-const initialState: UserState | null = null;
-
-// ✅ Explicitly declare state type here
 export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser: (_state, action: PayloadAction<UserState>) => action.payload,
-    clearUser: () => null
+    setUser: (state, action: PayloadAction<UserProfile>) => {
+      return action.payload;
+    },
+    clearUser: () => {
+      return initialState;
+    }
   }
 });
 

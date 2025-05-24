@@ -33,9 +33,14 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const { name } = await req.json();
+  const { name, email, address, phone } = await req.json();
 
-  const data = await createCompany(name);
+  const data = await createCompany({
+    name,
+    email,
+    address,
+    phone
+  });
 
   if (!data) {
     return new Response(JSON.stringify({ error: "Internal server error." }), {

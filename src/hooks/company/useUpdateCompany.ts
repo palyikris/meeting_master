@@ -7,6 +7,9 @@ interface UpdateCompanyPayLoad {
   name: string;
   is_active: boolean;
   id: string;
+  email: string;
+  address: string;
+  phone: string;
 }
 
 export const useUpdateCompany = () => {

@@ -17,12 +17,12 @@ export interface Room {
   created_at: string;
 }
 
-export interface Event {
+export interface RoomEvent {
   id: string;
   room_id: string;
   title: string;
-  start_time: string; 
-  end_time: string;   
+  start_time: string;
+  end_time: string;
   recurrence_rule?: string;
   recurrence_exceptions?: string[];
   created_at: string;

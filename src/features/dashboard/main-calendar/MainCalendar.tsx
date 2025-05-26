@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import {
-  EventApi,
   DateSelectArg,
   EventClickArg,
   EventContentArg,
-  formatDate,
   EventInput
 } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
@@ -12,25 +10,25 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { RoomEvent } from "@/types";
-
+import { convertRoomEventToEventInput } from "@/lib/dashboard/utils";
+import { Box } from "@mui/material";
+import "./styles/style.css";
 
 interface MainCalendarProps {
   focusedDate: Date;
   isLoading: boolean;
   events: RoomEvent[];
-  setEvents: (events: RoomEvent[]) => void;
 }
 
 function MainCalendar(props: MainCalendarProps) {
-
-  const { focusedDate, isLoading, events, setEvents } = props;
-  const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
+  const { focusedDate, isLoading, events } = props;
 
   const handleDateSelect = (selectInfo: DateSelectArg) => {
-    const title = prompt("Please enter a new title for your event");
     const calendarApi = selectInfo.view.calendar;
 
     calendarApi.unselect(); // clear date selection
+
+    const title = prompt("Please enter a new title for your event");
 
     if (title) {
       const newEvent: EventInput = {
@@ -42,15 +40,6 @@ function MainCalendar(props: MainCalendarProps) {
       };
 
       calendarApi.addEvent(newEvent);
-      const newRoomEvent: RoomEvent = {
-        id: newEvent.id || "",
-        title: newEvent.title || "",
-        start_time: newEvent.start?.toString() || "",
-        end_time: newEvent.end ? newEvent.end.toString() : newEvent.start?.toString() || "",
-        created_at: new Date().toISOString(),
-        room_id: "default_room" // Assuming a default room ID, replace with actual logic if needed
-      };
-      setEvents((prevEvents) => [...prevEvents, newRoomEvent]);
     }
   };
 
@@ -64,69 +53,84 @@ function MainCalendar(props: MainCalendarProps) {
     }
   };
 
-  const handleEvents = (events: EventApi[]) => {
-    const updatedEvents = events.map((event) => ({
-      id: event.id,
-      title: event.title,
-      start_time: event.start?.toISOString(),
-      end_time: event.end ? event.end.toISOString() : event.start?.toISOString(),
-      created_at: new Date().toISOString() // Assuming created_at is the current time
-    })) as RoomEvent[];
-
-    setEvents(updatedEvents);
-    setCurrentEvents(
-      events
-    );
+  const handleEventDrop = (eventDropInfo: EventClickArg) => {
+    const updatedEvent = eventDropInfo.event;
+    console.log("Event dropped:", updatedEvent.title, updatedEvent.start);
   };
+
+  if (isLoading) {
+    return <div>Loading events...</div>;
+  }
 
   return (
     <div className="demo-app">
       <div className="demo-app-main">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          headerToolbar={false}
           initialView="timeGridWeek"
           editable={true}
           selectable={true}
           selectMirror={true}
           dayMaxEvents={true}
           weekends={false}
-          events={events}
+          events={events.map(convertRoomEventToEventInput)}
           initialDate={focusedDate}
           select={handleDateSelect}
           eventContent={renderEventContent}
           eventClick={handleEventClick}
-          eventsSet={handleEvents}
+          eventDrop={handleEventDrop}
           allDaySlot={false}
           slotMinTime="08:00:00"
           slotMaxTime="20:00:00"
           timeZone="Europe/Budapest"
           dayHeaderFormat={{ weekday: "long" }}
           slotLabelFormat={{
-        hour: "numeric",
-        minute: "2-digit"
+            hour: "numeric",
+            minute: "2-digit"
           }}
           slotDuration="00:20:00"
           height={"auto"}
           themeSystem="bootstrap5"
           eventColor="#4E77E4"
-          eventTextColor="#ffffff"
+          datesSet={(dateInfo) => {
+            console.log("Current date range:", dateInfo.start, dateInfo.end);
+          }}
+          eventBackgroundColor="rgba(78, 119, 228, 0.3)"
+          eventTextColor="#4E77E4"
+          eventBorderColor="transparent"
         />
       </div>
     </div>
   );
 }
 
-
-
 function renderEventContent(eventContent: EventContentArg) {
   return (
-    <>
-      <b>{eventContent.timeText}</b>
-      <i>{eventContent.event.title}</i>
-    </>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        paddingLeft: "10px",
+        paddingTop: "5px"
+      }}
+    >
+      <b
+        style={{
+          marginBottom: "5px",
+          fontSize: "1.2em"
+        }}
+      >
+        {eventContent.event.title}
+      </b>
+      <i
+        style={{
+          fontSize: "1.05em"
+        }}
+      >
+        {eventContent.timeText}
+      </i>
+    </Box>
   );
 }
-
 
 export default MainCalendar;

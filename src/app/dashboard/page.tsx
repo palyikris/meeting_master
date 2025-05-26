@@ -4,6 +4,7 @@ import { RoomEvent } from "@/types";
 import { useEffect, useState } from "react";
 import MainCalendar from "../../features/dashboard/main-calendar/MainCalendar";
 import { useEvents } from "@/hooks/event/useEvents";
+import { Box } from "@mui/material";
 
 export default function DashboardPage() {
   const [focusedDate, setFocusedDate] = useState(new Date());
@@ -12,7 +13,6 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (data) {
-      console.log("Fetched events:", data);
       setEvents(data);
     }
   }, [data]);
@@ -22,13 +22,25 @@ export default function DashboardPage() {
   }
 
   return (
-    <div>
-      <MainCalendar
-        focusedDate={focusedDate}
-        isLoading={isLoading}
-        events={events}
-        setEvents={setEvents}
-      ></MainCalendar>
-    </div>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        width: "100vw",
+        overflowX: "hidden"
+      }}
+    >
+      <Box sx={{ width: "50%", height: "100%" }}></Box>
+      <Box sx={{ width: "100%", height: "100%" }}>
+        <MainCalendar
+          focusedDate={focusedDate}
+          isLoading={isLoading}
+          events={events}
+        ></MainCalendar>
+      </Box>
+    </Box>
   );
 }

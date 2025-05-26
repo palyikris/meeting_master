@@ -2,8 +2,7 @@ import React from "react";
 import {
   DateSelectArg,
   EventClickArg,
-  EventContentArg,
-  EventInput
+  EventContentArg
 } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -11,36 +10,40 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { RoomEvent } from "@/types";
 import { convertRoomEventToEventInput } from "@/lib/dashboard/utils";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import "./styles/style.css";
 
 interface MainCalendarProps {
   focusedDate: Date;
   isLoading: boolean;
   events: RoomEvent[];
+  selectInfo: DateSelectArg | null;
+  setSelectInfo: (selectInfo: DateSelectArg | null) => void;
 }
 
 function MainCalendar(props: MainCalendarProps) {
-  const { focusedDate, isLoading, events } = props;
+  const { focusedDate, isLoading, events, setSelectInfo } = props;
 
   const handleDateSelect = (selectInfo: DateSelectArg) => {
-    const calendarApi = selectInfo.view.calendar;
+    // const calendarApi = selectInfo.view.calendar;
 
-    calendarApi.unselect(); // clear date selection
+    // calendarApi.unselect(); // clear date selection
 
-    const title = prompt("Please enter a new title for your event");
+    setSelectInfo(selectInfo);
 
-    if (title) {
-      const newEvent: EventInput = {
-        id: String(new Date().getTime()), // Unique ID based on current timestamp
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      };
+    // const title = prompt("Please enter a new title for your event");
 
-      calendarApi.addEvent(newEvent);
-    }
+    // if (title) {
+    //   const newEvent: EventInput = {
+    //     id: String(new Date().getTime()), // Unique ID based on current timestamp
+    //     title,
+    //     start: selectInfo.startStr,
+    //     end: selectInfo.endStr,
+    //     allDay: selectInfo.allDay
+    //   };
+
+    //   calendarApi.addEvent(newEvent);
+    // }
   };
 
   const handleEventClick = (clickInfo: EventClickArg) => {
@@ -58,13 +61,43 @@ function MainCalendar(props: MainCalendarProps) {
     console.log("Event dropped:", updatedEvent.title, updatedEvent.start);
   };
 
-  if (isLoading) {
-    return <div>Loading events...</div>;
-  }
-
   return (
-    <div className="demo-app">
-      <div className="demo-app-main">
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        minHeight: "100vh"
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative"
+        }}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            display: isLoading ? "flex" : "none",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+        >
+          <CircularProgress color="primary" size={60}></CircularProgress>
+        </Box>
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="timeGridWeek"

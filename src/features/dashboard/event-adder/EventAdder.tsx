@@ -8,28 +8,26 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
+
 import { z } from "zod";
 import { DateSelectArg } from "@fullcalendar/core/index.js";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 
-const supabase = createClient();
-
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   start_time: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Start time must be a valid date",
+    message: "Start time must be a valid date"
   }),
   end_time: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "End time must be a valid date",
+    message: "End time must be a valid date"
   }),
   room_id: z.string().min(1, "Room ID is required"),
   recurrence_rule: z.string().optional(),
   recurrence_exceptions: z.array(z.date()).optional(),
-  background_color: z.string(),
-})
+  background_color: z.string()
+});
 
 interface EventAdderProps {
   selectInfo: DateSelectArg | null;
@@ -37,11 +35,21 @@ interface EventAdderProps {
 }
 
 const EventAdder = (props: EventAdderProps) => {
+  const { selectInfo } = props;
 
 
-  const { selectInfo, setSelectInfo } = props;
-
-  console.log("EventAdder selectInfo:", selectInfo);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      start_time: selectInfo?.startStr,
+      end_time: selectInfo?.endStr,
+      room_id: "",
+      recurrence_rule: "",
+      recurrence_exceptions: [],
+      background_color: "#4E77E4"
+    }
+  });
 
   useEffect(() => {
     form.reset({
@@ -53,20 +61,8 @@ const EventAdder = (props: EventAdderProps) => {
       recurrence_exceptions: [],
       background_color: "#4E77E4"
     });
-  }, [selectInfo]);
-  
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      start_time: selectInfo?.startStr,
-      end_time: selectInfo?.endStr,
-      room_id: "",
-      recurrence_rule: "",
-      recurrence_exceptions: [],
-      background_color: "#4E77E4",
-    },
-  });
+  }, [selectInfo, form]);
+
 
   return (
     <div>
@@ -203,6 +199,7 @@ const EventAdder = (props: EventAdderProps) => {
               </FormItem>
             )}
           ></FormField>
+          <Button type="submit">Add Event</Button>
         </form>
       </Form>
     </div>

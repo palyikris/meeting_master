@@ -24,8 +24,6 @@ export async function GET() {
     });
   }
 
-  console.log("Fetching rooms for company ID:", userProfile.company_id);
-
   const { data: rooms, error: roomError } = await supabase
     .from("rooms")
     .select("*")
@@ -39,7 +37,6 @@ export async function GET() {
   }
 
   const roomIds = rooms.map((room) => room.id);
-  console.log("Room IDs:", roomIds);
 
   const { data: events, error } = await supabase
     .from("events")

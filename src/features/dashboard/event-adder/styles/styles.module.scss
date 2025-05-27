@@ -1,0 +1,48 @@
+@import "../../../../../uniform_styles/uniform";
+
+
+.container {
+  @include container("100%", "100%");
+  background-color: #fff;
+
+  .header {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: $color-muted;
+  }
+
+  .separator{
+    margin-bottom: 1rem;
+    background-color: $color-muted;
+    height: 1px;
+    width: 100%;
+    opacity: 0.5;
+  }
+
+  .submitButton {
+    @include Button(100%, auto, $color-accent);
+    z-index: 0;
+
+    span {
+      z-index: 0;
+    }
+
+    &::before {
+      z-index: -1;
+    }
+
+    &:last-child {
+      @include Button(100%, auto, $color-danger);
+
+      z-index: 0;
+
+      span {
+        z-index: 0;
+      }
+
+      &::before {
+        z-index: -1;
+      }
+    }
+  }
+}

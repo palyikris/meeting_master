@@ -19,10 +19,12 @@ interface MainCalendarProps {
   events: RoomEvent[];
   selectInfo: DateSelectArg | null;
   setSelectInfo: (selectInfo: DateSelectArg | null) => void;
+  setUpdateEventId: (id: string | null) => void;
 }
 
 function MainCalendar(props: MainCalendarProps) {
-  const { focusedDate, isLoading, events, setSelectInfo } = props;
+  const { focusedDate, isLoading, events, setSelectInfo, setUpdateEventId } =
+    props;
 
   const handleDateSelect = (selectInfo: DateSelectArg) => {
     // const calendarApi = selectInfo.view.calendar;
@@ -30,6 +32,7 @@ function MainCalendar(props: MainCalendarProps) {
     // calendarApi.unselect(); // clear date selection
 
     setSelectInfo(selectInfo);
+    setUpdateEventId(null);
 
     // const title = prompt("Please enter a new title for your event");
 
@@ -47,13 +50,7 @@ function MainCalendar(props: MainCalendarProps) {
   };
 
   const handleEventClick = (clickInfo: EventClickArg) => {
-    if (
-      confirm(
-        `Are you sure you want to delete the event '${clickInfo.event.title}'`
-      )
-    ) {
-      clickInfo.event.remove();
-    }
+    setUpdateEventId(clickInfo.event.id);
   };
 
   const handleEventDrop = (eventDropInfo: EventClickArg) => {
@@ -68,21 +65,21 @@ function MainCalendar(props: MainCalendarProps) {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        alignItems: "flex-start",
         justifyContent: "center",
         position: "relative",
-        minHeight: "100vh"
+        minHeight: "100vh",
       }}
     >
       <div
         style={{
           width: "100%",
-          height: "100%",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          position: "relative"
+          position: "relative",
+          height: "100%",
         }}
       >
         <Box
@@ -93,7 +90,7 @@ function MainCalendar(props: MainCalendarProps) {
             transform: "translate(-50%, -50%)",
             display: isLoading ? "flex" : "none",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           <CircularProgress color="primary" size={60}></CircularProgress>
@@ -113,13 +110,13 @@ function MainCalendar(props: MainCalendarProps) {
           eventClick={handleEventClick}
           eventDrop={handleEventDrop}
           allDaySlot={false}
-          slotMinTime="08:00:00"
+          slotMinTime="06:00:00"
           slotMaxTime="20:00:00"
           timeZone="Europe/Budapest"
           dayHeaderFormat={{ weekday: "long" }}
           slotLabelFormat={{
             hour: "numeric",
-            minute: "2-digit"
+            minute: "2-digit",
           }}
           slotDuration="00:20:00"
           height={"auto"}
@@ -144,23 +141,33 @@ function renderEventContent(eventContent: EventContentArg) {
         display: "flex",
         flexDirection: "column",
         paddingLeft: "10px",
-        paddingTop: "5px"
+        paddingTop: "5px",
       }}
     >
       <b
         style={{
           marginBottom: "5px",
-          fontSize: "1.2em"
+          fontSize: "1.2em",
         }}
       >
         {eventContent.event.title}
       </b>
       <i
         style={{
-          fontSize: "1.05em"
+          fontSize: "1.05em",
         }}
       >
-        {eventContent.timeText}
+        {eventContent.event.start && eventContent.event.end
+          ? `${eventContent.event.start.toLocaleTimeString("hu-HU", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })} - ${eventContent.event.end.toLocaleTimeString("hu-HU", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })}`
+          : eventContent.timeText}
       </i>
     </Box>
   );

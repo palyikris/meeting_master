@@ -1,0 +1,49 @@
+.logoutButton {
+  color: #FF5C8D;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border: 2px solid #FF5C8D;
+  background-color: transparent;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  z-index: 0;
+}
+.logoutButton span {
+  position: relative;
+  z-index: 2;
+}
+.logoutButton:before {
+  content: "";
+  position: absolute;
+  top: -25%;
+  left: -25%;
+  width: 150%;
+  height: 150%;
+  background-color: #FF5C8D;
+  z-index: 0;
+  transition: all 0.2s ease-in-out;
+  pointer-events: none;
+  transform: translate(100%, 100%);
+  border-radius: 50px 0 0 0;
+}
+.logoutButton:hover {
+  color: #F9FAFB;
+}
+.logoutButton:hover::before {
+  transform: translateX(0);
+  transform: translateY(0);
+}
+.logoutButton span {
+  z-index: 0;
+}
+.logoutButton::before {
+  z-index: -1;
+}/*# sourceMappingURL=styles.module.css.map */

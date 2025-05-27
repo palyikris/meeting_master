@@ -31,7 +31,7 @@ export async function createEvent(
 }
 
 export async function updateEvent(
-  event: RoomEvent
+  event: Omit<RoomEvent, "created_at">
 ): Promise<RoomEvent | null> {
   const { data } = await axios.put(`/api/events/${event.id}`, event);
 
@@ -47,6 +47,8 @@ export async function updateEvent(
 
 export async function deleteEvent(id: string): Promise<boolean> {
   const { data } = await axios.delete(`/api/events/${id}`);
+
+  console.log(`/api/events/${id}`);
 
   if (!data || data.error) {
     console.error("Error deleting event:", data.error);

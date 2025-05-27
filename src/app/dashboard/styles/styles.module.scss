@@ -1,0 +1,15 @@
+@import "../../../../uniform_styles/uniform";
+
+.logoutButton {
+  @include Button(auto, auto, $color-accent);
+  padding: .5rem 1rem;
+  z-index: 0; 
+
+  span {
+    z-index: 0;
+  }
+
+  &::before {
+    z-index: -1;
+  }
+}

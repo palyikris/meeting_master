@@ -1,0 +1,27 @@
+@import "../../../../../../uniform_styles/uniform";
+
+.container {
+  @include container("100%", "100%");
+  background-color: #fff;
+
+  .header {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: $color-muted;
+    width: 100%;
+    text-align: left;
+  }
+
+  .separator {
+    margin-bottom: 1rem;
+    background-color: $color-muted;
+    height: 1px;
+    width: 100%;
+    opacity: 0.5;
+  }
+
+  .eventList{
+    @include container(100%, 100%);
+    background-color: #fff;
+  }
+}

@@ -16,7 +16,7 @@ export const checkSession = async (supabase: SupabaseClient, router: AppRouterIn
 
     if (profile?.role === "admin") {
       router.push("/admin");
-    } else if (profile?.role === "company_admin") {
+    } else if (profile?.role === "company_admin" || profile?.role === "user") {
       router.push("/dashboard");
     }
   }

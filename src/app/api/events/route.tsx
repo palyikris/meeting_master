@@ -11,10 +11,12 @@ export async function GET() {
   if (
     !userProfile ||
     !userProfile.role ||
-    (userProfile.role !== "company_admin" && userProfile.role !== "admin")
+    (userProfile.role !== "company_admin" &&
+      userProfile.role !== "admin" &&
+      userProfile.role !== "user")
   ) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401
+      status: 401,
     });
   }
 

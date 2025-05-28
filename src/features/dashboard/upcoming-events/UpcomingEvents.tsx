@@ -12,7 +12,6 @@ interface UpcomingEventProps {
 
 const UpcomingEvents: React.FC<UpcomingEventProps> = ({ events, rooms, isLoading }) => {
 
-  console.log("Upcoming Events:", events);
 
   if (isLoading) {
     return (

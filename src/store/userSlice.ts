@@ -17,8 +17,8 @@ export const userSlice = createSlice({
     },
     clearUser: () => {
       return initialState;
-    }
-  }
+    },
+  },
 });
 
 export const { setUser, clearUser } = userSlice.actions;

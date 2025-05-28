@@ -11,7 +11,7 @@
     color: $color-muted;
   }
 
-  .separator{
+  .separator {
     margin-bottom: 1rem;
     background-color: $color-muted;
     height: 1px;
@@ -31,7 +31,7 @@
       z-index: -1;
     }
 
-    &:last-child {
+    &:nth-child(2) {
       @include Button(100%, auto, $color-danger);
 
       z-index: 0;

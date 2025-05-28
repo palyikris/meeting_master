@@ -530,7 +530,7 @@ const EventAdder = (props: EventAdderProps) => {
               </FormItem>
             )}
           ></FormField>
-          <FormField
+          {/* <FormField
             control={form.control}
             name="recurrence_rule"
             render={({ field }) => (
@@ -666,7 +666,7 @@ const EventAdder = (props: EventAdderProps) => {
                 <FormMessage />
               </FormItem>
             )}
-          ></FormField>
+          ></FormField> */}
           <Box
             sx={{
               display: "flex",

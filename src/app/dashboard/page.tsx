@@ -1,6 +1,6 @@
 "use client"
 
-import { Room, RoomEvent } from "@/types";
+import { Room, RoomEvent, UserProfile } from "@/types";
 import { useEffect, useState } from "react";
 import MainCalendar from "../../features/dashboard/main-calendar/MainCalendar";
 import { useEvents } from "@/hooks/event/useEvents";
@@ -23,7 +23,7 @@ export default function DashboardPage() {
   const { data, isLoading, error } = useEvents();
   const [selectInfo, setSelectInfo] = useState<DateSelectArg | null>(null);
   const [updateEventId, setUpdateEventId] = useState<string | null>(null);
-
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const { data: fetchedRooms } = useRooms();
   const [rooms, setRooms] = useState<Room[] | null>([]);
 
@@ -34,6 +34,36 @@ export default function DashboardPage() {
       setRooms(fetchedRooms);
     }
   }, [fetchedRooms]);
+
+  useEffect(() => {
+    const fetcher = async () => {
+      const supabase = createClient();
+      const { data: user, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error("Error fetching user profile:", error);
+        router.push("/login");
+        return;
+      }
+      if (user) {
+        const { data: profile, error: profileError } = await supabase
+          .from("user_profiles")
+          .select("*")
+          .eq("user_id", user.user.id)
+          .single();
+
+        if (profileError) {
+          console.error("Error fetching user profile:", profileError);
+          return;
+        }
+
+        setUserProfile(profile);
+      } else {
+        router.push("/login");
+      }
+    };
+
+    fetcher();
+  }, []);
 
   useEffect(() => {
     if (data) {
@@ -94,28 +124,30 @@ export default function DashboardPage() {
           height: "100%",
         }}
       >
-        <Box
-          sx={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "#fff",
-            borderRadius: "10px",
-            padding: 2,
-            margin: "2rem 1rem",
-            overflowX: "hidden",
-            boxShadow: "rgba(78,119,228, 0.3) 0px 2px 8px 0px",
-          }}
-        >
-          <EventAdder
-            selectInfo={selectInfo}
-            setSelectInfo={setSelectInfo}
-            updateEvent={
-              events.find((event) => event.id === updateEventId) || null
-            }
-            setUpdateEventId={setUpdateEventId}
-            rooms={rooms || []}
-          ></EventAdder>
-        </Box>
+        {userProfile && userProfile.role === "company_admin" && (
+          <Box
+            sx={{
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#fff",
+              borderRadius: "10px",
+              padding: 2,
+              margin: "2rem 1rem",
+              overflowX: "hidden",
+              boxShadow: "rgba(78,119,228, 0.3) 0px 2px 8px 0px",
+            }}
+          >
+            <EventAdder
+              selectInfo={selectInfo}
+              setSelectInfo={setSelectInfo}
+              updateEvent={
+                events.find((event) => event.id === updateEventId) || null
+              }
+              setUpdateEventId={setUpdateEventId}
+              rooms={rooms || []}
+            ></EventAdder>
+          </Box>
+        )}
         <Box
           sx={{
             width: "100%",
@@ -124,6 +156,10 @@ export default function DashboardPage() {
             borderRadius: "10px",
             padding: 2,
             margin: "0 1rem",
+            marginTop:
+              userProfile && userProfile.role === "company_admin"
+                ? "0"
+                : "2rem",
             overflowX: "hidden",
             boxShadow: "rgba(78,119,228, 0.3) 0px 2px 8px 0px",
             display: "flex",
@@ -169,7 +205,7 @@ export default function DashboardPage() {
                   new Date(a.start_time).getTime() -
                   new Date(b.start_time).getTime()
               )
-              .slice(0, 2)}
+              .slice(0, userProfile?.role === "company_admin" ? 2 : 6)}
             rooms={rooms || []}
             isLoading={isLoading}
           />

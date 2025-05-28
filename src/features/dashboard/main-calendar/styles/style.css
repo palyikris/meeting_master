@@ -38,8 +38,7 @@
   text-transform: uppercase !important;
   color: #F1F5F9;
   padding: 0.5rem 5rem !important;
-  background-color: transparent !important;
-  background: linear-gradient(135deg, #4E77E4 50%, #10B981 100%);
+  background-color: #FF5C8D !important;
   width: auto !important;
   border-color: transparent !important;
   transition: all 0.3s ease-in-out !important;
@@ -55,8 +54,7 @@
 .fc-next-button {
   color: #F1F5F9;
   padding: 0.5rem 1rem !important;
-  background-color: transparent !important;
-  background: linear-gradient(135deg, #4E77E4 50%, #10B981 100%);
+  background-color: #FF5C8D !important;
   width: auto !important;
   border-color: transparent !important;
   transition: all 0.3s ease-in-out !important;
@@ -71,7 +69,6 @@
 }
 
 .fc-prev-button {
-  background: linear-gradient(-135deg, #4E77E4 50%, #10B981 100%);
   border-radius: 10px 0 0 10px !important;
 }
 

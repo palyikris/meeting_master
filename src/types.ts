@@ -27,6 +27,7 @@ export interface RoomEvent {
   recurrence_exceptions?: string[];
   created_at: string;
   background_color?: string;
+  participants?: string[];
 }
 
 export interface UserProfile {

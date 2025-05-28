@@ -2,6 +2,7 @@ import { getUserProfileFromRequest } from "@/lib/auth/get_user_profile";
 import { createClient } from "@/lib/supabase/server";
 
 
+
 export async function GET() {
   const supabase = await createClient();
   const userProfile = await getUserProfileFromRequest();
@@ -20,26 +21,27 @@ export async function GET() {
 
   if (!userProfile.company_id) {
     return new Response(JSON.stringify({ error: "Company not found." }), {
-      status: 404
+      status: 404,
     });
   }
 
-  const { data: rooms, error: roomError } = await supabase
-    .from("rooms")
+  const {data: users, error: userError} = await supabase
+    .from("user_profiles")
     .select("*")
     .eq("company_id", userProfile.company_id);
-
-  if (roomError) {
-    console.error("Error fetching rooms:", roomError);
+  
+  if (userError) {
+    console.error("Error fetching users:", userError);
     return new Response(JSON.stringify({ error: "Internal server error." }), {
-      status: 500
+      status: 500,
     });
   }
+  
 
-  return new Response(JSON.stringify(rooms), {
+  return new Response(JSON.stringify(users), {
     status: 200,
     headers: {
-      "Content-Type": "application/json"
-    }
+      "Content-Type": "application/json",
+    },
   });
 }

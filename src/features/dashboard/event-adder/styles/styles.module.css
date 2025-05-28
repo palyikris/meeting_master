@@ -69,7 +69,7 @@
 .container .submitButton::before {
   z-index: -1;
 }
-.container .submitButton:last-child {
+.container .submitButton:nth-child(2) {
   color: #EF4444;
   width: 100%;
   height: auto;
@@ -86,11 +86,11 @@
   border-radius: 5px;
   z-index: 0;
 }
-.container .submitButton:last-child span {
+.container .submitButton:nth-child(2) span {
   position: relative;
   z-index: 2;
 }
-.container .submitButton:last-child:before {
+.container .submitButton:nth-child(2):before {
   content: "";
   position: absolute;
   top: -25%;
@@ -104,16 +104,16 @@
   transform: translate(100%, 100%);
   border-radius: 50px 0 0 0;
 }
-.container .submitButton:last-child:hover {
+.container .submitButton:nth-child(2):hover {
   color: #F9FAFB;
 }
-.container .submitButton:last-child:hover::before {
+.container .submitButton:nth-child(2):hover::before {
   transform: translateX(0);
   transform: translateY(0);
 }
-.container .submitButton:last-child span {
+.container .submitButton:nth-child(2) span {
   z-index: 0;
 }
-.container .submitButton:last-child::before {
+.container .submitButton:nth-child(2)::before {
   z-index: -1;
 }/*# sourceMappingURL=styles.module.css.map */

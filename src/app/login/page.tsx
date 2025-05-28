@@ -11,13 +11,15 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+
 import { createClient } from "@/lib/supabase/client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { PasswordInput } from "@/components/ui/password-input";
-import styles from "./styles/login.module.css"
+import styles from "./styles/login.module.css";
 import { useRouter } from "next/navigation";
 import { checkSession } from "@/lib/auth/check_session";
 import Image from "next/image";
@@ -28,22 +30,30 @@ const supabase = createClient();
 
 const formSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8, "Password must be at least 8 characters long.").max(50).regex(/[A-Z]/, "Password must include at least one uppercase letter")
-  .regex(/[0-9]/, "Password must include at least one number")
-  .regex(/[^A-Za-z0-9]/, "Password must include at least one special character")
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long.")
+    .max(50)
+    .regex(/[A-Z]/, "Password must include at least one uppercase letter")
+    .regex(/[0-9]/, "Password must include at least one number")
+    .regex(
+      /[^A-Za-z0-9]/,
+      "Password must include at least one special character"
+    ),
+  isForTablet: z.boolean().optional(),
 });
 
 export default function LoginPage() {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      password: ""
-    }
+      password: "",
+      isForTablet: false,
+    },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -51,7 +61,7 @@ export default function LoginPage() {
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password
+      password,
     });
 
     if (error) {
@@ -69,13 +79,16 @@ export default function LoginPage() {
           id: data.session.user.id,
           email: data.session.user.email || "",
           role: profile?.role,
-          company_id: profile?.company_id
+          company_id: profile?.company_id,
         })
       );
 
       if (profile?.role === "admin") {
         router.push("/admin");
-      } else if (profile?.role === "company_admin") {
+      } else if (
+        profile?.role === "company_admin" ||
+        profile?.role === "user"
+      ) {
         router.push("/dashboard");
       }
     }
@@ -84,7 +97,6 @@ export default function LoginPage() {
   useEffect(() => {
     checkSession(supabase, router);
   }, [router]);
-  
 
   return (
     <div className={styles.container}>
@@ -127,7 +139,7 @@ export default function LoginPage() {
                           borderRadius: "5px",
                           width: "20em",
                           height: "3em",
-                          padding: "0.5rem"
+                          padding: "0.5rem",
                         }}
                       />
                     </FormControl>
@@ -151,7 +163,7 @@ export default function LoginPage() {
                           border: "2px solid #4E77E4",
                           borderRadius: "5px",
                           padding: "0.5rem",
-                          height: "3em"
+                          height: "3em",
                         }}
                       />
                     </FormControl>
@@ -159,6 +171,33 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="isForTablet"
+                render={({ field }) => (
+                  <FormItem style={{ marginTop: "1rem" }}>
+                    <FormControl>
+                      <label style={{ display: "flex", alignItems: "center" }}>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          style={{
+                            width: "1.5em",
+                            height: "1.5em",
+                            marginRight: "0.5rem",
+                            border: "2px solid #4E77E4",
+                            borderRadius: "5px",
+                          }}
+                          color="#4E77E4"
+                        />
+                        Tablet Mode
+                      </label>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              ></FormField>
               <Button type="submit" className={styles.submitButton}>
                 <span>Sign in</span>
               </Button>

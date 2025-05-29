@@ -25,9 +25,7 @@ const supabase = createClient();
 export default function TabletPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [events, setEvents] = useState<RoomEvent[]>([]);
-  const [selectedRoomId, setSelectedRoomId] = useState<string | null>(
-    () => localStorage.getItem("selectedRoomId") || null
-  );
+  const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [now, setNow] = useState(dayjs());
   const queryClient = useQueryClient();
 
@@ -35,6 +33,13 @@ export default function TabletPage() {
   const { data: fetchedEvents } = useEvents();
 
   const router = useRouter();
+
+  useEffect(() => {
+    const storedRoomId = localStorage.getItem("selectedRoomId");
+    if (storedRoomId) {
+      setSelectedRoomId(storedRoomId);
+    }
+  }, []);
 
   useEffect(() => {
     if (fetchedRooms) setRooms(fetchedRooms);

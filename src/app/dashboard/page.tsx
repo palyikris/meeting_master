@@ -251,6 +251,7 @@ export default function DashboardPage() {
               .slice(0, userProfile?.role === "company_admin" ? 2 : 6)}
             rooms={rooms || []}
             isLoading={isLoading}
+            setUpdateEventId={setUpdateEventId}
           />
         </Box>
       </Box>

@@ -6,13 +6,17 @@ import { CircularProgress } from "@mui/material";
 
 interface UpcomingEventProps {
   events: RoomEvent[];
-  rooms: Room[]
+  rooms: Room[];
   isLoading: boolean;
+  setUpdateEventId: (id: string | null) => void;
 }
 
-const UpcomingEvents: React.FC<UpcomingEventProps> = ({ events, rooms, isLoading }) => {
-
-
+const UpcomingEvents: React.FC<UpcomingEventProps> = ({
+  events,
+  rooms,
+  isLoading,
+  setUpdateEventId,
+}) => {
   if (isLoading) {
     return (
       <div className={styles.container}>
@@ -20,7 +24,7 @@ const UpcomingEvents: React.FC<UpcomingEventProps> = ({ events, rooms, isLoading
         <div className={styles.separator}></div>
         <CircularProgress color="primary" size={55}></CircularProgress>
       </div>
-    )
+    );
   }
 
   return (
@@ -29,19 +33,20 @@ const UpcomingEvents: React.FC<UpcomingEventProps> = ({ events, rooms, isLoading
       <div className={styles.separator}></div>
       <div className={styles.eventList}>
         {events.map((event) => {
-          const room = rooms.find(room => room.id === event.room_id);
+          const room = rooms.find((room) => room.id === event.room_id);
           if (!room) return null;
           return (
             <EventCard
               key={event.id}
               event={event}
               room={room}
+              onClick={() => setUpdateEventId(event.id)}
             />
           );
         })}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default UpcomingEvents;

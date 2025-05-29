@@ -83,6 +83,14 @@ export default function LoginPage() {
         })
       );
 
+      if (
+        profile?.role === "admin" ||
+        (profile?.role === "company_admin" && values.isForTablet)
+      ) {
+        router.push("/tablet");
+        return;
+      }
+
       if (profile?.role === "admin") {
         router.push("/admin");
       } else if (

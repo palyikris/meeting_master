@@ -1,0 +1,34 @@
+@import "../../../../../uniform_styles/uniform";
+
+.submitButton {
+  @include Button(auto, auto, $color-accent);
+  z-index: 0;
+
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  span {
+    z-index: 0;
+  }
+
+  &::before {
+    z-index: -1;
+  }
+
+  &:nth-child(3) {
+    @include Button(auto, auto, $color-danger);
+
+    z-index: 0;
+
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    span {
+      z-index: 0;
+    }
+
+    &::before {
+      z-index: -1;
+    }
+  }
+}

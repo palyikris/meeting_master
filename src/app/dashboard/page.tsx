@@ -4,7 +4,7 @@ import { Room, RoomEvent, UserProfile } from "@/types";
 import { useEffect, useState } from "react";
 import MainCalendar from "../../features/dashboard/main-calendar/MainCalendar";
 import { useEvents } from "@/hooks/event/useEvents";
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { DateSelectArg } from "@fullcalendar/core/index.js";
 import EventAdder from "@/features/dashboard/event-adder/EventAdder";
 import { Toaster } from "react-hot-toast";
@@ -16,6 +16,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import styles from "./styles/styles.module.css";
+import RoomAdder from "@/features/dashboard/room_adder/RoomAdder";
 
 export default function DashboardPage() {
   const [focusedDate] = useState(new Date());
@@ -26,6 +27,7 @@ export default function DashboardPage() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const { data: fetchedRooms } = useRooms();
   const [rooms, setRooms] = useState<Room[] | null>([]);
+  const [isRoomAdderDisplayed, setIsRoomAdderDisplayed] = useState(false);
 
   const router = useRouter();
 
@@ -167,23 +169,64 @@ export default function DashboardPage() {
             alignItems: "center",
           }}
         >
-          <Image
-            src={"/logo.png"}
-            width={150}
-            height={75}
-            alt="Meeting master logo"
-          ></Image>
-          <Button
-            onClick={async () => {
-              const supabase = createClient();
-              await supabase.auth.signOut();
-              router.push("/login");
-            }}
-            className={styles.logoutButton}
-          >
-            <LogoutRoundedIcon />
-            Logout
-          </Button>
+          {isRoomAdderDisplayed ? (
+            <RoomAdder
+              setIsRoomAdderDisplayed={setIsRoomAdderDisplayed}
+            ></RoomAdder>
+          ) : (
+            <Grid container spacing={2}>
+              <Grid
+                size={4}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Image
+                  src={"/logo.png"}
+                  width={150}
+                  height={75}
+                  alt="Meeting master logo"
+                ></Image>
+              </Grid>
+              <Grid
+                size={4}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Button
+                  className={styles.logoutButton}
+                  onClick={() => setIsRoomAdderDisplayed(true)}
+                >
+                  Add Room
+                </Button>
+              </Grid>
+              <Grid
+                size={4}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Button
+                  onClick={async () => {
+                    const supabase = createClient();
+                    await supabase.auth.signOut();
+                    router.push("/login");
+                  }}
+                  className={styles.logoutButton}
+                >
+                  <LogoutRoundedIcon />
+                  Logout
+                </Button>
+              </Grid>
+            </Grid>
+          )}
         </Box>
         <Box
           sx={{

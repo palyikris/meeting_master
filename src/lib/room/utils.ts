@@ -44,14 +44,14 @@ export async function getRoomById(id: string): Promise<Room | null> {
 }
 
 export async function createRoom(
-  room: Omit<Room, "id" | "created_at">
+  room: Omit<Room, "id" | "created_at" | "company_id">
 ): Promise<Room | null> {
   const response = await fetch("/api/rooms", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(room)
+    body: JSON.stringify(room),
   });
 
   if (!response.ok) {

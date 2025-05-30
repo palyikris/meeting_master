@@ -157,6 +157,59 @@ export default function DashboardPage() {
             backgroundColor: "#fff",
             borderRadius: "10px",
             padding: 2,
+            margin: "2rem 1rem",
+            overflowX: "hidden",
+            boxShadow: "rgba(78,119,228, 0.3) 0px 2px 8px 0px",
+          }}
+        >
+          <UpcomingEvents
+            events={[...events]
+              .filter((event) => new Date(event.start_time) > new Date())
+              .sort(
+                (a, b) =>
+                  new Date(a.start_time).getTime() -
+                  new Date(b.start_time).getTime()
+              )
+              .slice(0, userProfile?.role === "company_admin" ? 2 : 6)}
+            rooms={rooms || []}
+            isLoading={isLoading}
+            setUpdateEventId={setUpdateEventId}
+          />
+        </Box>
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "#fff",
+            borderRadius: "10px",
+            padding: 2,
+            margin: "0 1rem",
+            marginTop:
+              userProfile && userProfile.role === "company_admin"
+                ? "0"
+                : "2rem",
+            overflowX: "hidden",
+            boxShadow: "rgba(78,119,228, 0.3) 0px 2px 8px 0px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginBottom: "2rem",
+          }}
+        >
+          <Image
+            src={"/logo.png"}
+            alt="Meeting master logo"
+            width={200}
+            height={100}
+          ></Image>
+        </Box>
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "#fff",
+            borderRadius: "10px",
+            padding: 2,
             margin: "0 1rem",
             marginTop:
               userProfile && userProfile.role === "company_admin"
@@ -174,24 +227,9 @@ export default function DashboardPage() {
               setIsRoomAdderDisplayed={setIsRoomAdderDisplayed}
             ></RoomAdder>
           ) : (
-            <Grid container spacing={2}>
+            <Grid container spacing={3}>
               <Grid
-                size={4}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  src={"/logo.png"}
-                  width={150}
-                  height={75}
-                  alt="Meeting master logo"
-                ></Image>
-              </Grid>
-              <Grid
-                size={4}
+                size={6}
                 sx={{
                   display: "flex",
                   alignItems: "center",
@@ -206,7 +244,7 @@ export default function DashboardPage() {
                 </Button>
               </Grid>
               <Grid
-                size={4}
+                size={6}
                 sx={{
                   display: "flex",
                   alignItems: "center",
@@ -227,32 +265,6 @@ export default function DashboardPage() {
               </Grid>
             </Grid>
           )}
-        </Box>
-        <Box
-          sx={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "#fff",
-            borderRadius: "10px",
-            padding: 2,
-            margin: "2rem 1rem",
-            overflowX: "hidden",
-            boxShadow: "rgba(78,119,228, 0.3) 0px 2px 8px 0px",
-          }}
-        >
-          <UpcomingEvents
-            events={[...events]
-              .filter((event) => new Date(event.start_time) > new Date())
-              .sort(
-                (a, b) =>
-                  new Date(a.start_time).getTime() -
-                  new Date(b.start_time).getTime()
-              )
-              .slice(0, userProfile?.role === "company_admin" ? 2 : 6)}
-            rooms={rooms || []}
-            isLoading={isLoading}
-            setUpdateEventId={setUpdateEventId}
-          />
         </Box>
       </Box>
       <Box

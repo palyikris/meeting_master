@@ -25,6 +25,7 @@ import { checkSession } from "@/lib/auth/check_session";
 import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/store/userSlice";
+import toast, { Toaster } from "react-hot-toast";
 
 const supabase = createClient();
 
@@ -65,14 +66,22 @@ export default function LoginPage() {
     });
 
     if (error) {
+      if (error.code === "invalid_credentials") {
+        toast.error("Invalid email or password. Please try again.");
+      }
       return;
     }
     if (data.session) {
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from("user_profiles")
         .select("*")
         .eq("user_id", data.session.user.id)
         .single();
+
+      if (error) {
+        console.error("Error fetching user profile:", error);
+        return;
+      }
 
       dispatch(
         setUser({
@@ -110,7 +119,35 @@ export default function LoginPage() {
     <div className={styles.container}>
       <div className={styles.bgSquare}></div>
       <div className={styles.bgSquare}></div>
+      <Toaster
+        position="bottom-center"
+        toastOptions={{
+          duration: 2000,
+          style: {
+            background: "#fff",
+            color: "#1E293B",
+          },
 
+          success: {
+            iconTheme: {
+              primary: "#10B981",
+              secondary: "#10B981",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#EF4444",
+              secondary: "#EF4444",
+            },
+          },
+          loading: {
+            iconTheme: {
+              primary: "#4E77E4",
+              secondary: "#4E77E4",
+            },
+          },
+        }}
+      ></Toaster>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className={styles.form}>
           <div className={styles.coloredSegment}>
